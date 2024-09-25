@@ -14,8 +14,10 @@ import EditJobPage from './pages/EditJobPage';
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Logout from "./components/Logout";
+import { useState } from 'react';
 
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   // Add New Job
   const addJob = async (newJob) => {
     const res = await fetch('/api/jobs', {
