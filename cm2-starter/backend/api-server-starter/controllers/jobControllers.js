@@ -4,9 +4,13 @@ const Job = require("../models/jobModel");
 // get all Jobs
 const getJobs = async (req, res) => {
   //   const user_id = req.user._id;
+  const limit = parseInt(req.query._limit);
 
   try {
-    const jobs = await Job.find({}).sort({ createdAt: -1 });
+    // const jobs = await Job.find({}).sort({ createdAt: -1 });
+    const jobs = limit
+      ? await Job.find({}).sort({ createdAt: -1 }).limit(limit)
+      : await Job.find({}).sort({ createdAt: -1 });
     res.status(200).json(jobs);
   } catch (error) {
     console.error(error);
