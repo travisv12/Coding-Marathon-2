@@ -7,19 +7,19 @@ const {
   deleteJob,
   updateJob,
 } = require("../controllers/jobControllers");
-// const requireAuth = require("../middleware/requireAuth");
-
-// // // require auth for all workout routes
-// router.use(requireAuth);
+const requireAuth = require("../middleware/requireAuth");
 
 // GET all TodoTasks
 router.get("/", getJobs);
 
-// POST a new TodoTask
-router.post("/", addJob);
-
 // GET a single TodoTask
 router.get("/:id", getJob);
+
+// // // require auth for all workout routes
+router.use(requireAuth);
+
+// POST a new TodoTask
+router.post("/", addJob);
 
 // DELETE a TodoTask
 router.delete("/:id", deleteJob);
