@@ -19,28 +19,31 @@ const Signup = ({ setIsAuthenticated }) => {
       [e.target.name]: e.target.value,
     });
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    try {
-      const res = await fetch("http://localhost:4000/api/users/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      if (res.ok) {
-        setIsAuthenticated(true);
-        navigate("/login");
-      } else {
-        console.error("Signup failed");
-      }
-    } catch (error) {
-      console.error("Error during signup", error);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await fetch("http://localhost:4000/api/users/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      // Store the token in localStorage
+      localStorage.setItem("accessToken", data.token);
+      // Set authentication state to true
+      setIsAuthenticated(true);
+      // Navigate to the home page
+      navigate("/");
+    } else {
+      console.error("Signup failed");
     }
-  };
+  } catch (error) {
+    console.error("Error during signup", error);
+  }
+};
 
   return (
     <div className="container mx-auto p-4">

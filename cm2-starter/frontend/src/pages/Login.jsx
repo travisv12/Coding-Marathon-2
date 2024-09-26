@@ -6,7 +6,7 @@ const Login = ({ setIsAuthenticated }) => {
     email: "",
     password: "",
   });
-
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,13 +27,18 @@ const Login = ({ setIsAuthenticated }) => {
         body: JSON.stringify(formData),
       });
       if (res.ok) {
-         setIsAuthenticated(true);
+        const data = await res.json();
+        // Store the token in localStorage
+                localStorage.setItem("accessToken", data.token);
+                
+        setIsAuthenticated(true);
         navigate("/");
       } else {
-        console.error("Login failed");
+        const errorData = await res.json();
+        setErrorMessage(errorData.error || "Login failed"); // Set error message
       }
     } catch (error) {
-      console.error("Error during login", error);
+      setErrorMessage("Error during login: " + error.message); 
     }
   };
 
@@ -62,8 +67,9 @@ const Login = ({ setIsAuthenticated }) => {
           />
         </div>
         <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Login
+          Sign In
         </button>
+        {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
       </form>
     </div>
   );

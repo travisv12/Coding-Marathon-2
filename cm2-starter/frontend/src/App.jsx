@@ -1,75 +1,85 @@
+import { useState } from "react";
 import {
   Route,
   createBrowserRouter,
   createRoutesFromElements,
   RouterProvider,
-} from 'react-router-dom';
-import MainLayout from './layouts/MainLayout';
-import HomePage from './pages/HomePage';
-import JobsPage from './pages/JobsPage';
-import NotFoundPage from './pages/NotFoundPage';
-import JobPage, { jobLoader } from './pages/JobPage';
-import AddJobPage from './pages/AddJobPage';
-import EditJobPage from './pages/EditJobPage';
+} from "react-router-dom";
+import MainLayout from "./layouts/MainLayout";
+import HomePage from "./pages/HomePage";
+import JobsPage from "./pages/JobsPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import JobPage, { jobLoader } from "./pages/JobPage";
+import AddJobPage from "./pages/AddJobPage";
+import EditJobPage from "./pages/EditJobPage";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Logout from "./components/Logout";
-import { useState } from 'react';
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // Add New Job
-  const addJob = async (newJob) => {
-    const res = await fetch('/api/jobs', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newJob),
-    });
-    return;
-  };
-
-  // Delete Job
-  const deleteJob = async (id) => {
-    const res = await fetch(`/api/jobs/${id}`, {
-      method: 'DELETE',
-    });
-    return;
-  };
-
-  // Update Job
-  const updateJob = async (job) => {
-    const res = await fetch(`/api/jobs/${job.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(job),
-    });
-    return;
-  };
 
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<MainLayout />}>
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+      <Route
+        path="/"
+        element={
+          <MainLayout
+            isAuthenticated={isAuthenticated}
+            setIsAuthenticated={setIsAuthenticated}
+          />
+        }
+      >
+        <Route
+          path="/signup"
+          element={
+            <ProtectedRoute isAuthenticated={!isAuthenticated} redirectPath="/">
+              <Signup setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={<Login setIsAuthenticated={setIsAuthenticated} />}
+        />
         <Route
           path="/logout"
           element={<Logout setIsAuthenticated={setIsAuthenticated} />}
         />
         <Route index element={<HomePage />} />
-        <Route path="/jobs" element={<JobsPage />} />
-        <Route path="/add-job" element={<AddJobPage addJobSubmit={addJob} />} />
+        <Route
+          path="/jobs"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <JobsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-job"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <AddJobPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/edit-job/:id"
-          element={<EditJobPage updateJobSubmit={updateJob} />}
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <EditJobPage />
+            </ProtectedRoute>
+          }
           loader={jobLoader}
         />
         <Route
           path="/jobs/:id"
-          element={<JobPage deleteJob={deleteJob} />}
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <JobPage />
+            </ProtectedRoute>
+          }
           loader={jobLoader}
         />
         <Route path="*" element={<NotFoundPage />} />
@@ -79,4 +89,5 @@ const App = () => {
 
   return <RouterProvider router={router} />;
 };
+
 export default App;
