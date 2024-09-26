@@ -1,46 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import useLogin from "../Hooks/useLogin";
 
 const Login = ({ setIsAuthenticated }) => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  const { formData, errorMessage, handleChange, handleSubmit } = useLogin({
+    setIsAuthenticated,
   });
-  const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch("http://localhost:4000/api/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        // Store the token in localStorage
-                localStorage.setItem("accessToken", data.token);
-                
-        setIsAuthenticated(true);
-        navigate("/");
-      } else {
-        const errorData = await res.json();
-        setErrorMessage(errorData.error || "Login failed"); // Set error message
-      }
-    } catch (error) {
-      setErrorMessage("Error during login: " + error.message); 
-    }
-  };
 
   return (
     <div className="container mx-auto p-4">

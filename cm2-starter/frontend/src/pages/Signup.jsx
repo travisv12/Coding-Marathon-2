@@ -1,49 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import useSignup from "../Hooks/useSignup";
 
 const Signup = ({ setIsAuthenticated }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    phone_number: "",
-    gender: "",
-    date_of_birth: "",
-    membership_status: "",
+  const { formData, errorMessage, handleChange, handleSubmit } = useSignup({
+    setIsAuthenticated,
   });
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await fetch("http://localhost:4000/api/users/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      // Store the token in localStorage
-      localStorage.setItem("accessToken", data.token);
-      // Set authentication state to true
-      setIsAuthenticated(true);
-      // Navigate to the home page
-      navigate("/");
-    } else {
-      console.error("Signup failed");
-    }
-  } catch (error) {
-    console.error("Error during signup", error);
-  }
-};
 
   return (
     <div className="container mx-auto p-4">
