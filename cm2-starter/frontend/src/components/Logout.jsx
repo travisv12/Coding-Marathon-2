@@ -6,6 +6,8 @@ const Logout = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Remove the access token
+    localStorage.removeItem("user");
     // Clear authentication state
     setIsAuthenticated(false);
     // Redirect to login page

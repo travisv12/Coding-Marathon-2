@@ -1,13 +1,27 @@
-
-import { NavLink } from "react-router-dom";
+import { useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
-import Logout from "./Logout";
 
 const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if token exists in localStorage
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [setIsAuthenticated]);
+
   const linkClass = ({ isActive }) =>
     isActive
       ? "bg-black text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
       : "text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2";
+
+       const buttonClass =
+         "text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2";
 
   return (
     <nav className="bg-indigo-700 border-b border-indigo-500">
@@ -32,19 +46,25 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
                   Add Job
                 </NavLink>
                 {isAuthenticated ? (
-                  <NavLink
-                    to="/logout"
-                    className={linkClass}
-                    onClick={() => (
-                      <Logout setIsAuthenticated={setIsAuthenticated} />
-                    )}
+                  <button
+                    onClick={() => {
+                      localStorage.removeItem("accessToken");
+                      setIsAuthenticated(false);
+                      navigate("/login");
+                    }}
+                    className={buttonClass}
                   >
                     Logout
-                  </NavLink>
+                  </button>
                 ) : (
-                  <NavLink to="/login" className={linkClass}>
-                    Login
-                  </NavLink>
+                  <>
+                    <NavLink to="/login" className={linkClass}>
+                      Login
+                    </NavLink>
+                    <NavLink to="/signup" className={linkClass}>
+                      Signup
+                    </NavLink>
+                  </>
                 )}
               </div>
             </div>
@@ -54,4 +74,5 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
     </nav>
   );
 };
+
 export default Navbar;
