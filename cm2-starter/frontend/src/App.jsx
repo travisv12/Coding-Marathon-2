@@ -26,6 +26,7 @@ const App = () => {
   };
 
   const addJob = async (newJob) => {
+
     const token = getToken();
     const res = await fetch("/api/jobs", {
       method: "POST",
