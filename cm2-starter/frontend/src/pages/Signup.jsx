@@ -1,9 +1,8 @@
 import useSignup from "../Hooks/useSignup";
 
 const Signup = ({ setIsAuthenticated }) => {
-  const { formData, errorMessage, handleChange, handleSubmit } = useSignup({
-    setIsAuthenticated,
-  });
+  const { formData, errorMessage, handleChange, handleSubmit } =
+    useSignup(setIsAuthenticated);
 
   return (
     <div className="container mx-auto p-4">

@@ -2,11 +2,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const useSignup = () => {
+const useSignup = (setIsAuthenticated) => {
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    phone_number: "",
+    gender: "",
+    date_of_birth: "",
+    membership_status: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -20,10 +24,6 @@ const useSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setErrorMessage("Passwords do not match");
-      return;
-    }
     try {
       const res = await fetch("http://localhost:4000/api/users/signup", {
         method: "POST",
@@ -33,7 +33,11 @@ const useSignup = () => {
         body: JSON.stringify(formData),
       });
       if (res.ok) {
-        navigate("/login");
+        const user = await res.json();
+        localStorage.setItem("user", JSON.stringify(user));
+        console.log("User signed up successfully!");
+        setIsAuthenticated(true);
+        navigate("/");
       } else {
         const errorData = await res.json();
         setErrorMessage(errorData.error || "Signup failed");

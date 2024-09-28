@@ -20,6 +20,48 @@ import ProtectedRoute from "./components/ProtectedRoute";
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const getToken = () => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    return user ? user.token : null;
+  };
+
+  const addJob = async (newJob) => {
+    const token = getToken();
+    const res = await fetch("/api/jobs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(newJob),
+    });
+    return;
+  };
+
+  const deleteJob = async (id) => {
+    const token = getToken();
+    const res = await fetch(`/api/jobs/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return;
+  };
+
+  const updateJob = async (job) => {
+    const token = getToken();
+    const res = await fetch(`/api/jobs/${job.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(job),
+    });
+    return;
+  };
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route
@@ -60,7 +102,7 @@ const App = () => {
           path="/add-job"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <AddJobPage />
+              <AddJobPage addJobSubmit={addJob} />
             </ProtectedRoute>
           }
         />
@@ -68,7 +110,7 @@ const App = () => {
           path="/edit-job/:id"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <EditJobPage />
+              <EditJobPage updateJobSubmit={updateJob} />
             </ProtectedRoute>
           }
           loader={jobLoader}
@@ -77,7 +119,7 @@ const App = () => {
           path="/jobs/:id"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <JobPage />
+              <JobPage deleteJob={deleteJob} />
             </ProtectedRoute>
           }
           loader={jobLoader}
